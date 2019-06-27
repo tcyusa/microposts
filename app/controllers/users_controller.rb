@@ -1,11 +1,13 @@
 class UsersController < ApplicationController
-  before_action :require_user_logged_in, only: [:index, :show]
+  before_action :require_user_logged_in, only: [:index, :show, :edit]
   def index
     @users = User.order(id: :desc).page(params[:page]).per(25)
   end
 
   def show
-    @user = User.find(params[:id])
+    set_user
+    @microposts = @user.microposts.order(id: :desc).page(params[:page])
+    counts(@user)
   end
 
   def new
@@ -24,7 +26,27 @@ class UsersController < ApplicationController
     end
   end
   
+  def edit
+    set_user
+  end
+  
+  def update
+    set_user
+    
+    if @user.update(user_params)
+      flash[:success] = 'プロフィールを編集しました。'
+      redirect_to @user
+    else
+      flash.now[:danger] = 'プロフィールの編集に失敗しました。'
+      render :edit
+    end
+  end
+  
   private
+  
+  def set_user
+    @user = User.find(params[:id])
+  end
   
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
