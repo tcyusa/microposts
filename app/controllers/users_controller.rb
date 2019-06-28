@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-  before_action :require_user_logged_in, only: [:index, :show, :edit]
+  before_action :require_user_logged_in, only: [:index, :show, :edit, :followings, :followers]
+
   def index
     @users = User.order(id: :desc).page(params[:page]).per(25)
   end
@@ -40,6 +41,18 @@ class UsersController < ApplicationController
       flash.now[:danger] = 'プロフィールの編集に失敗しました。'
       render :edit
     end
+  end
+  
+  def followings
+    set_user
+    @followings = @user.followings.page(params[:page])
+    counts(@user)
+  end
+  
+  def followers
+    set_user
+    @followers = @user.followers.page(params[:page])
+    counts(@user)
   end
   
   private
