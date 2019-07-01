@@ -6,7 +6,9 @@
             </div>
             <div class="card-body">
                 <img class="rounded img-fluid" src="<%= gravatar_url(@user, { size: 500 }) %>" alt="">
-                <%= link_to 'Edit profile', edit_user_path(@user) %>
+                <% if current_user == @user %>
+                    <%= link_to 'Edit profile', edit_user_path(@user) %>
+                <% end %>
             </div>
         </div>
         <%= render 'relationships/follow_button', user: @user %>
